@@ -7,4 +7,14 @@ test_that("macro_average_sensitivity() works", {
   out <- macro_average_sensitivity(fold1, obs, pred)
   expect_is(out, "tbl_df")
   expect_equal(ncol(out), 3)
+  fold1$obs[1] <- NA
+  expect_equal(
+    round(macro_average_sensitivity_vec(fold1$obs, fold1$pred), 2),
+    0.42
+  )
+  expect_true(is.na(macro_average_sensitivity_vec(
+    fold1$obs,
+    fold1$pred,
+    na_rm = FALSE
+  )))
 })
