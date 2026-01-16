@@ -1,10 +1,24 @@
 Package: mupet
-Title: What the Package Does (One Line, Title Case)
+Title: Multiclass Performance Evaluation Toolkit
 Version: 0.0.0.9000
-Authors@R: 
-    person("Aymeric", "Stamm", , "aymeric.stamm@cnrs.fr", role = c("aut", "cre"),
-           comment = c(ORCID = "0000-0002-8725-3654"))
-Description: What the package does (one paragraph).
+Authors@R: c(
+    person(
+        "Lise", "Bellanger",
+        role = "aut"
+    ),
+    person(
+        "Manon", "Simonot", 
+        role = "aut"
+    ),
+    person(
+        "Aymeric", "Stamm", 
+        email = "aymeric.stamm@cnrs.fr", 
+        role = c("aut", "cre"), 
+        comment = c(ORCID = "0000-0002-8725-3654")
+    ))
+Description: Implementation of custom tidymodels metrics for 5-class classification with
+    imbalanced classes (1 negative over-represented class): Macro Average Sensitivity,
+    Macro Average Specificity, Generalized Weighted Youden Index.
 License: MIT + file LICENSE
 Suggests: 
     testthat (>= 3.0.0)
@@ -14,3 +28,6 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3
 URL: https://github.com/astamm/mupet, https://astamm.github.io/mupet/
 BugReports: https://github.com/astamm/mupet/issues
+Imports: 
+    rlang,
+    yardstick
