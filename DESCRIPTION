@@ -16,7 +16,7 @@ Authors@R: c(
         role = c("aut", "cre"), 
         comment = c(ORCID = "0000-0002-8725-3654")
     ))
-Description: Implementation of custom tidymodels metrics for 5-class classification with
+Description: Implementation of custom tidymodels metrics for multi-class prediction models with
     imbalanced classes (1 negative over-represented class): Macro Average Sensitivity,
     Macro Average Specificity, Generalized Weighted Youden Index.
 License: MIT + file LICENSE

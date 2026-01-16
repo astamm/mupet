@@ -1,6 +1,6 @@
-#' Macro Average Sensitivity
+#' Macro Average Specificity
 #'
-#' This function computes the macro-average sensitivity for a multi-class prediction model.
+#' This function computes the macro-average specificity for a multi-class prediction model.
 #' It assumes that the *negative* class is the first one.
 #'
 #' @param data Either a data.frame containing the columns specified by the truth and estimate
@@ -14,29 +14,31 @@
 #' This argument is only applicable when estimator = "binary".
 #' @param ... Currently unused.
 #'
-#' @returns A scalar storing the value of the macro-average sensitivity score.
+#' @returns A scalar storing the value of the macro-average specificity score.
 #'
-#' @name macro_average_sensitivity
+#' @name macro_average_specificity
 #' @examples
 #' fold1 <- subset(yardstick::hpc_cv, Resample == "Fold01")
-#' macro_average_sensitivity_vec(fold1$obs, fold1$pred)
-#' macro_average_sensitivity(fold1, obs, pred)
+#' macro_average_specificity_vec(fold1$obs, fold1$pred)
+#' macro_average_specificity(fold1, obs, pred)
 NULL
 
-macro_average_sensitivity_impl <- function(truth, estimate) {
-  xtab <- table(truth, estimate)
+macro_average_specificity_impl <- function(truth, estimate) {
+  xtab <- table(truth, estimate) # confusion matrix
   n <- nrow(xtab)
-  acc <- sum(sapply(2:n, function(i) {
-    cii <- xtab[i, i]
-    ci <- sum(xtab[i, ])
-    cii / ci
+  indices <- 2:n
+  acc <- sum(sapply(indices, function(i) {
+    ind_i <- indices[-i]
+    cjk <- sum(xtab[ind_i, ind_i])
+    cj <- sum(xtab[ind_i, ])
+    cjk / cj
   }))
   acc / (n - 1)
 }
 
 #' @export
-#' @rdname macro_average_sensitivity
-macro_average_sensitivity_vec <- function(
+#' @rdname macro_average_specificity
+macro_average_specificity_vec <- function(
   truth,
   estimate,
   estimator = NULL,
@@ -59,23 +61,23 @@ macro_average_sensitivity_vec <- function(
     return(NA_real_)
   }
 
-  macro_average_sensitivity_impl(truth, estimate)
+  macro_average_specificity_impl(truth, estimate)
 }
 
-macro_average_sensitivity <- function(data, ...) {
-  UseMethod("macro_average_sensitivity")
+macro_average_specificity <- function(data, ...) {
+  UseMethod("macro_average_specificity")
 }
 
 #' @export
-#' @rdname macro_average_sensitivity
-macro_average_sensitivity <- yardstick::new_class_metric(
-  macro_average_sensitivity,
+#' @rdname macro_average_specificity
+macro_average_specificity <- yardstick::new_class_metric(
+  macro_average_specificity,
   direction = "maximize"
 )
 
 #' @export
-#' @rdname macro_average_sensitivity
-macro_average_sensitivity.data.frame <- function(
+#' @rdname macro_average_specificity
+macro_average_specificity.data.frame <- function(
   data,
   truth,
   estimate,
@@ -86,8 +88,8 @@ macro_average_sensitivity.data.frame <- function(
   ...
 ) {
   yardstick::class_metric_summarizer(
-    name = "macro_average_sensitivity",
-    fn = macro_average_sensitivity_vec,
+    name = "macro_average_specificity",
+    fn = macro_average_specificity_vec,
     data = data,
     truth = !!rlang::enquo(truth),
     estimate = !!rlang::enquo(estimate),
