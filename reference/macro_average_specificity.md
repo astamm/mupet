@@ -1,12 +1,12 @@
-# Macro Average Sensitivity
+# Macro Average Specificity
 
-This function computes the macro-average sensitivity for a multi-class
+This function computes the macro-average specificity for a multi-class
 prediction model. It assumes that the *negative* class is the first one.
 
 ## Usage
 
 ``` r
-macro_average_sensitivity_vec(
+macro_average_specificity_vec(
   truth,
   estimate,
   estimator = NULL,
@@ -16,10 +16,10 @@ macro_average_sensitivity_vec(
   ...
 )
 
-macro_average_sensitivity(data, ...)
+macro_average_specificity(data, ...)
 
 # S3 method for class 'data.frame'
-macro_average_sensitivity(
+macro_average_specificity(
   data,
   truth,
   estimate,
@@ -74,17 +74,17 @@ macro_average_sensitivity(
 
 ## Value
 
-A scalar storing the value of the macro-average sensitivity score.
+A scalar storing the value of the macro-average specificity score.
 
 ## Examples
 
 ``` r
 fold1 <- subset(yardstick::hpc_cv, Resample == "Fold01")
-macro_average_sensitivity_vec(fold1$obs, fold1$pred)
-#> [1] 0.4185164
-macro_average_sensitivity(fold1, obs, pred)
+macro_average_specificity_vec(fold1$obs, fold1$pred)
+#> [1] 0.7113796
+macro_average_specificity(fold1, obs, pred)
 #> # A tibble: 1 × 3
 #>   .metric                   .estimator .estimate
 #>   <chr>                     <chr>          <dbl>
-#> 1 macro_average_sensitivity macro          0.419
+#> 1 macro_average_specificity macro          0.711
 ```
