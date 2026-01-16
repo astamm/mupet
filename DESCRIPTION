@@ -1,6 +1,6 @@
 Package: mupet
 Title: Multiclass Performance Evaluation Toolkit
-Version: 0.0.0.9000
+Version: 0.1.0
 Authors@R: c(
     person(
         "Lise", "Bellanger",
@@ -16,9 +16,10 @@ Authors@R: c(
         role = c("aut", "cre"), 
         comment = c(ORCID = "0000-0002-8725-3654")
     ))
-Description: Implementation of custom tidymodels metrics for multi-class prediction models with
-    imbalanced classes (1 negative over-represented class): Macro Average Sensitivity,
-    Macro Average Specificity, Generalized Weighted Youden Index.
+Description: Implementation of custom 'tidymodels' metrics for multi-class
+    prediction models with a single negative class. Currently are implemented
+    macro-average sensitivity and specificity and a generalized weighted
+    Youden index.
 License: MIT + file LICENSE
 Suggests: 
     testthat (>= 3.0.0)
