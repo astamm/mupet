@@ -93,7 +93,7 @@ macro_average_sensitivity.data.frame <- function(
     estimate = !!rlang::enquo(estimate),
     estimator = estimator,
     na_rm = na_rm,
-    case_weights = !!rlang::enquo(case_weights),
-    event_level = event_level
+    event_level = event_level,
+    case_weights = !!rlang::enquo(case_weights)
   )
 }

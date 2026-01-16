@@ -1,12 +1,14 @@
-#' Macro Average Specificity
+#' Weighted Youden Index
 #'
-#' This function computes the macro-average specificity for a multi-class prediction model.
+#' This function computes the weighted Youden index for a multi-class prediction model.
 #' It assumes that the *negative* class is the first one.
 #'
 #' @param data Either a data.frame containing the columns specified by the truth and estimate
 #' arguments, or a table/matrix where the true class results should be in the columns of the table.
 #' @param truth The column identifier for the true class results (that is a factor).
 #' @param estimate The column identifier for the predicted class results (that is also factor).
+#' @param sensitivity_weight A scalar value specifying the weight to put on sensitivity.
+#'   Defaults to `0.5` which puts equal weights to sensitivity and specificity.
 #' @param estimator One of: "binary", "macro", "macro_weighted", or "micro" to specify the type of averaging to be done.
 #' @param na_rm A logical value indicating whether NA values should be stripped before the computation proceeds.
 #' @param case_weights The optional column identifier for case weights.
@@ -14,33 +16,52 @@
 #' This argument is only applicable when estimator = "binary".
 #' @param ... Currently unused.
 #'
-#' @returns A scalar storing the value of the macro-average specificity score.
+#' @returns A scalar storing the value of the weighted Youden index.
 #'
-#' @name macro_average_specificity
+#' @name weighted_youden_index
 #' @examples
 #' fold1 <- subset(yardstick::hpc_cv, Resample == "Fold01")
-#' macro_average_specificity_vec(fold1$obs, fold1$pred)
-#' macro_average_specificity(fold1, obs, pred)
+#' weighted_youden_index_vec(fold1$obs, fold1$pred)
+#' weighted_youden_index(fold1, obs, pred)
 NULL
 
-macro_average_specificity_impl <- function(truth, estimate) {
+weighted_youden_index_impl <- function(
+  truth,
+  estimate,
+  sensitivity_weight = 0.5
+) {
   xtab <- table(truth, estimate)
   n <- nrow(xtab)
   indices <- 2:n
-  acc <- sum(sapply(indices, function(i) {
+
+  specificity_value <- sum(sapply(indices, function(i) {
     ind_i <- indices[-i]
     cjk <- sum(xtab[ind_i, ind_i])
     cj <- sum(xtab[ind_i, ])
     cjk / cj
   }))
-  acc / (n - 1)
+  specificity_value <- specificity_value / (n - 1)
+
+  sensitivity_value <- sum(sapply(2:n, function(i) {
+    cii <- xtab[i, i]
+    ci <- sum(xtab[i, ])
+    cii / ci
+  }))
+  sensitivity_value <- sensitivity_value / (n - 1)
+
+  2 *
+    (sensitivity_weight *
+      sensitivity_value +
+      (1 - sensitivity_weight) * specificity_value) -
+    1
 }
 
 #' @export
-#' @rdname macro_average_specificity
-macro_average_specificity_vec <- function(
+#' @rdname weighted_youden_index
+weighted_youden_index_vec <- function(
   truth,
   estimate,
+  sensitivity_weight = 0.5,
   estimator = NULL,
   na_rm = TRUE,
   case_weights = NULL,
@@ -61,26 +82,31 @@ macro_average_specificity_vec <- function(
     return(NA_real_)
   }
 
-  macro_average_specificity_impl(truth, estimate)
+  weighted_youden_index_impl(
+    truth,
+    estimate,
+    sensitivity_weight = sensitivity_weight
+  )
 }
 
-macro_average_specificity <- function(data, ...) {
-  UseMethod("macro_average_specificity")
+weighted_youden_index <- function(data, ...) {
+  UseMethod("weighted_youden_index")
 }
 
 #' @export
-#' @rdname macro_average_specificity
-macro_average_specificity <- yardstick::new_class_metric(
-  macro_average_specificity,
+#' @rdname weighted_youden_index
+weighted_youden_index <- yardstick::new_class_metric(
+  weighted_youden_index,
   direction = "maximize"
 )
 
 #' @export
-#' @rdname macro_average_specificity
-macro_average_specificity.data.frame <- function(
+#' @rdname weighted_youden_index
+weighted_youden_index.data.frame <- function(
   data,
   truth,
   estimate,
+  sensitivity_weight = 0.5,
   estimator = NULL,
   na_rm = TRUE,
   case_weights = NULL,
@@ -88,14 +114,15 @@ macro_average_specificity.data.frame <- function(
   ...
 ) {
   yardstick::class_metric_summarizer(
-    name = "macro_average_specificity",
-    fn = macro_average_specificity_vec,
+    name = "weighted_youden_index",
+    fn = weighted_youden_index_vec,
     data = data,
     truth = !!rlang::enquo(truth),
     estimate = !!rlang::enquo(estimate),
     estimator = estimator,
     na_rm = na_rm,
     event_level = event_level,
-    case_weights = !!rlang::enquo(case_weights)
+    case_weights = !!rlang::enquo(case_weights),
+    fn_options = list(sensitivity_weight = sensitivity_weight)
   )
 }
